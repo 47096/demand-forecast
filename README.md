@@ -92,7 +92,7 @@ pip install -r requirements.txt
 jupyter notebook analysis.ipynb
 ```
 
-**Data:** Monthly international airline passengers (public series).
+**Data:** `data/passengers.csv` — monthly passenger counts (vendored; no remote fetch).
 
 **Stack:** `prophet` · `statsmodels` · `pandas` · `matplotlib`
 
