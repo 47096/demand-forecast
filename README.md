@@ -1,74 +1,105 @@
-# Prophet Time Series
+# How much demand is coming?
 
-Forecasting airline passenger demand 12 months ahead using [Prophet](https://facebook.github.io/prophet/) — with seasonal decomposition, train/test validation, and confidence intervals.
+**A planning problem, solved with time series.**
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/wsamuelw/prophet-time-series/blob/main/Prophet_by_Meta_Demo.ipynb)
+Capacity, roster, inventory, and cash all sit on a **guess about next year**. I help teams turn history into a **demand outlook with a range** — not a single number nobody trusts.
 
-## Problem
+---
 
-Airline passenger volumes follow strong seasonal patterns — peaks in summer, troughs in winter. The goal: build a forecasting model that captures these patterns and predicts demand 12 months into the future, then validate against held-out data.
+## The stake
 
-## Approach
+Under-forecast and you lose sales or burn staff. Over-forecast and you pay for idle capacity. Seasonal peaks make averages dangerous. Leaders need **one place to argue with**: trend + season + uncertainty.
 
-1. **Decompose** the time series into trend, seasonality, and residuals using additive decomposition (period=12 for monthly data)
-2. **Train** a Prophet model on historical data (pre-2023)
-3. **Forecast** 12 months into the future with confidence intervals
-4. **Validate** by comparing predictions against actual test data (2023 onwards)
+## The story
 
-## Results
+Airline passenger volumes rise over time and **swing with the seasons**. The job: forecast the next 12 months and **check yourself** on held-out months.
 
-The model captures the seasonal cycle well — predictions track the upward trend and annual peaks. Confidence intervals widen as the forecast horizon extends, which is expected.
+I built a classic forecast loop:
 
-Key output columns:
-- `yhat` — point forecast
-- `yhat_lower` / `yhat_upper` — 80% confidence interval
+1. **See the pattern** — trend, seasonality, leftovers  
+2. **Model** history (train)  
+3. **Forecast 12 months** with confidence bands  
+4. **Score it** on real months you held back  
 
-## Setup
+**Outcome on this build:**
+- Seasonal peaks tracked instead of averaged away  
+- **Point forecast + interval** (`yhat`, `yhat_lower`, `yhat_upper`) for planning  
+- Validation on 2023 holdout so the story is not just a pretty curve  
 
-### Google Colab
+> **The commercial idea:** plan capacity against a **range you can defend**, not a gut-feel peak.
 
-Click the badge above — no setup required.
+---
 
-### Local
+## What that looks like in your world
+
+| You have | I turn it into |
+|----------|----------------|
+| Monthly/weekly history | **Forecast + confidence band** |
+| “Summer always kills us” | Explicit **seasonality** in the plan |
+| Spreadsheet extrapolations | Model + **holdout honesty** |
+| Ops / finance planning cycle | A shared demand assumption |
+
+**Typical engagement:** define the horizon and unit (passengers, orders, tickets) → fit and validate → a planning pack for ops and finance.
+
+**[Talk to me about demand planning →](https://datafying.co/#contactus)** · [datafying](https://datafying.co/)
+
+---
+
+## Why operators bring me in
+
+- Speaks **capacity and cost**, not ARIMA acronyms  
+- Shows **intervals** so people plan risk, not fantasy  
+- One clear seasonal story for the leadership deck  
+- Honest about holidays, shocks, and regime change  
+
+---
+
+## Proof of craft *(technical)*
+
+### Job
+Monthly airline passengers → **12-month** forecast with intervals.
+
+### Method
+1. Additive decomposition (period = 12) — trend / seasonal / residual  
+2. Prophet on train (pre-2023)  
+3. Forecast horizon = one full seasonal cycle  
+4. Compare to test (2023+)  
+
+### Outputs
+| Column | Meaning |
+|--------|---------|
+| `yhat` | Point forecast |
+| `yhat_lower` / `yhat_upper` | Uncertainty band (e.g. 80%) |
+
+### Modelling choices
+- **Additive** seasonality (amplitude does not scale with level)  
+- **12-month horizon** — validate a full cycle without wild extrapolation  
+- **Default Prophet** — yearly seasonality was enough here  
+
+### Limits (honesty)
+- Historical patterns can break (pandemic, price shocks)  
+- No causal drivers in this build (fares, routes, marketing)  
+- Re-forecast on a cadence; don’t freeze last year’s chart  
+
+---
+
+## Reproduce
 
 ```bash
-pip install prophet pandas matplotlib statsmodels
-git clone https://github.com/wsamuelw/prophet-time-series.git
-cd prophet-time-series
-jupyter notebook Prophet_by_Meta_Demo.ipynb
+git clone https://github.com/47096/demand-forecast.git
+cd demand-forecast
+pip install -r requirements.txt
+jupyter notebook analysis.ipynb
 ```
 
-## Data
+**Data:** Monthly international airline passengers (public series).
 
-**Airline Passengers** — monthly international passenger counts (1949–2023).
+**Stack:** `prophet` · `statsmodels` · `pandas` · `matplotlib`
 
-| Split | Period | Records | Purpose |
-|-------|--------|---------|---------|
-| Train | Before 2023-01 | ~888 | Model fitting |
-| Test | 2023-01 onwards | 12 | Validation |
+---
 
-## Project Structure
+## Next step
 
-```
-prophet-time-series/
-├── Prophet_by_Meta_Demo.ipynb   # full walkthrough
-├── README.md
-└── LICENSE
-```
+If planning week is coming up and the forecast is a spreadsheet guess — that is the engagement I run.
 
-## Tech Stack
-
-- **Prophet** — forecasting engine
-- **statsmodels** — seasonal decomposition
-- **pandas** — data manipulation
-- **matplotlib** — visualisation
-
-## Key Decisions
-
-- **Additive decomposition** — chosen over multiplicative because the seasonal amplitude doesn't grow proportionally with the trend
-- **12-month forecast horizon** — matches one full seasonal cycle, enough to validate pattern capture without over-extrapolating
-- **Default Prophet parameters** — no custom seasonality or holidays added; the default yearly seasonality was sufficient for this dataset
-
-## License
-
-MIT
+**[Book a conversation →](https://datafying.co/#contactus)** · Customer & demand analytics · [datafying](https://datafying.co/)
